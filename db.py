@@ -35,3 +35,18 @@ def get(table):
     with closing(connect()) as con, closing(con.cursor()) as cur:
         cur.execute("SELECT * FROM " + str(table))
         return (True, rows_to_dict(cur.description, cur.fetchall()))
+
+def get_single(table, id):
+    if table not in SUPPORTED_ENTITIES:
+        return (False, [])
+    with closing(connect()) as con, closing(con.cursor()) as cur:
+        cur.execute("SELECT * FROM " + str(table) + "where id = " + str(id))
+        return (True, rows_to_dict(cur.description, cur.fetchone()))
+
+def delete(table, id):
+    if table not in SUPPORTED_ENTITIES:
+        return (False, [])
+    with closing(connect()) as con, closing(con.cursor()) as cur:
+        cur.execute("delete FROM " + str(table) + " where id = " + str(id))
+        con.commit()
+        return (True, rows_to_dict(cur.description, cur.fetchall()))

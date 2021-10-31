@@ -43,10 +43,10 @@ def edit(entity_name):
     (success, entities) = db.get(entity_name)
     return error(404, 'Endpoint did found!')
 
-@app.route("/<entity_name>/remove", methods=['GET'])
-def remove(entity_name):
-    (success, entities) = db.get(entity_name)
-    return error(404, 'Endpoint did found!')
+@app.route("/<entity_name>/remove/<id>", methods=['GET'])
+def remove(entity_name, id):
+    (success, entities) = db.delete(entity_name, id)
+    return redirect('/' + entity_name)
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
