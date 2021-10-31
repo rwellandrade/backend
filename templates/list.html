@@ -1,0 +1,24 @@
+{% block header %} {{ data.entity_title }} {% endblock %}
+{% block content %}
+    <h1>Lista {{ data.entity_title }}</h1>
+    <table>
+        <tr>
+            {% for col_header in data.col_headers %}
+                <th>{{ col_header }}</th>
+            {% endfor %}
+            <th>Ações</th>
+        </tr>
+        {% for entity in data.entities %}
+            <tr>
+                {% for value in entity %}
+                    <td>{{ value }}</td>
+                {% endfor %}
+                <td>
+                    <a href="/{{ data.entity_name }}/remove">Remover</a>
+                    <a href="/{{ data.entity_name }}/edit">Editar</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    <p><a href="/">Voltar</a></p>
+{% endblock %}

@@ -1,13 +1,13 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, render_template, session, request, redirect, url_for
 import db
+import app_factory
 
 app = Flask(__name__)
 
-products = [
-    {"id": e, "name": "Produto " + str(e), "description":"Descrição "+str(e), "image":"https://cdn.pixabay.com/photo/2018/01/18/20/42/pencil-3091204_1280.jpg", "category": "Categoria "+str(e)} for e in range(1,11)]
 
 def error(status, message):
     return jsonify({'status': status, 'error': True, 'message': message})
+
 
 @app.route("/v1/<entity_name>", methods=['GET'])
 def get(entity_name):
@@ -16,6 +16,50 @@ def get(entity_name):
         return error(404, 'Endpoint not found')
     return jsonify(entities)
 
-db.init()
-if __name__ == "__main__":
-    app.run(host='0.0.0.0')
+
+@app.route("/")
+def index():
+    return render_template('index.html', my_string="Wheeeee!", my_list=[0, 1, 2, 3, 4, 5])
+
+
+@app.route("/<entity_name>", methods=['GET'])
+def get_list(entity_name):
+    (success, entities) = db.get(entity_name)
+    if not success:
+        return error(404, 'Endpoint not found')
+    if len(entities) == 0:
+        return error(404, 'empty')
+    entity = entities[0]
+
+    return render_template('list.html', data={
+        'entity_name': entity_name,
+        'entity_title': entity_name,
+        'col_headers': list(entity.keys()),
+        'entities': [list(ent.values()) for ent in entities],
+    })
+
+@app.route("/<entity_name>/edit", methods=['GET'])
+def edit(entity_name):
+    (success, entities) = db.get(entity_name)
+    return error(404, 'Endpoint did found!')
+
+@app.route("/<entity_name>/remove", methods=['GET'])
+def remove(entity_name):
+    (success, entities) = db.get(entity_name)
+    return error(404, 'Endpoint did found!')
+
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        session['username'] = request.form['username']
+        return redirect(url_for('index'))
+    return render_template('login.html')
+
+
+@app.route("/logout")
+def logout():
+    return redirect('/')
+
+
+if __name__ == '__main__':
+    app_factory.create_app(app)
