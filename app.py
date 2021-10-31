@@ -2,8 +2,8 @@ from flask import Flask, jsonify, render_template, session, request, redirect, u
 import db
 import app_factory
 
+db.init()
 app = Flask(__name__)
-
 
 def error(status, message):
     return jsonify({'status': status, 'error': True, 'message': message})
