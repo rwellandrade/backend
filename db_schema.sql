@@ -48,16 +48,16 @@ CREATE TABLE IF NOT EXISTS product_items (
 );
 
 REPLACE INTO items(name, available_qty) values
-('Tomate', 50),
-('Alface', 30),
-('Cebola', 5),
-('Alho', 5),
-('Carne', 15),
-('Frango', 15),
-('Batata', 20),
-('Coca-Cola', 10),
-('Heineken', 10),
-('Guaraná', 15);
+db.session.add(Item(name='Tomate', available_qty=50))
+db.session.add(Item(name='Alface', available_qty=30))
+db.session.add(Item(name='Cebola', available_qty=5))
+db.session.add(Item(name='Alho', available_qty=5))
+db.session.add(Item(name='Carne', available_qty=15))
+db.session.add(Item(name='Frango', available_qty=15))
+db.session.add(Item(name='Batata', available_qty=20))
+db.session.add(Item(name='Coca-Cola', available_qty=10))
+db.session.add(Item(name='Heineken', available_qty=10))
+db.session.add(Item(name='Guaraná', available_qty=15))
 
 REPLACE INTO products(name, img, price) values
 ('Hamburguer', '', 30.5),

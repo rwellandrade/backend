@@ -1,7 +1,11 @@
-{% block header %} {{ data.entity_title }} {% endblock %}
+{%- extends "base.html" %}
+
+
 {% block content %}
+   <div class="container">
     <h1>Lista {{ data.entity_title }}</h1>
-    <table>
+    <p><a href="/">Voltar</a></p>
+    <table class="table">
         <tr>
             {% for col_header in data.col_headers %}
                 <th>{{ col_header }}</th>
@@ -10,15 +14,14 @@
         </tr>
         {% for entity in data.entities %}
             <tr>
-                {% for value in entity %}
-                    <td>{{ value }}</td>
+                {% for col_header in data.col_headers %}
+                    <td>{{ entity[col_header] }}</td>
                 {% endfor %}
                 <td>
-                    <a href="/{{ data.entity_name }}/remove/{{ entity[0] }}">Remover</a>
-                    <a href="/{{ data.entity_name }}/edit/{{ entity[0] }}">Editar</a>
+                    <a href="/{{ data.entity_name }}/remove/{{ entity.id }}">Remover</a>
+                    <a href="/{{ data.entity_name }}/edit/{{ entity.id }}">Editar</a>
                 </td>
             </tr>
         {% endfor %}
     </table>
-    <p><a href="/">Voltar</a></p>
-{% endblock %}
+{%- endblock %}
