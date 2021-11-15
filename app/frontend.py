@@ -46,40 +46,27 @@ def get_list(entity_name):
 
 @frontend.route("/<entity_name>/edit/<id>", methods=['GET', 'POST'])
 def edit(entity_name, id):
-    if request.method == 'GET':
-        (success, model) = resolve_forms(entity_name)
-        if not success:
-            return error(404, 'Endpoint not found')
-        f = model()
-        print(to_json(f))
-        return render_template('form.html', form=f, data={
-        'entity_name': entity_name,
-        'entity_title': entity_name,
-    })
-    if request.method == 'POST':
-        (success, model) = resolve_entity(entity_name)
-        if not success:
-            return error(404, 'Endpoint not found')
-        (success, entity) = model.edit(id)
-        if not success:
-            return error(401, entity)
-        return redirect('/' + entity_name + '/show/' + id)
-
-
-@frontend.route("/<entity_name>/show/<id>", methods=['GET'])
-def show(entity_name, id):
+    (success, form) = resolve_forms(entity_name)
     (success, model) = resolve_entity(entity_name)
     if not success:
         return error(404, 'Endpoint not found')
-    (success, entity) = model.get_single(id)
-    if not success:
-        return error(404, 'Endpoint not found')
-    return render_template('list.html', data={
-        'entity_name': model.TABLE_NAME,
-        'entity_title': model.TABLE_NAME,
-        'col_headers': list(entity.keys()),
-        'entity': list(entity.values()),
+    entity = model.query.filter_by(id=id).first()
+    if entity is None:
+        return error(404, entity_name + ' not found for id: ' + str(id))
+    if request.method == 'GET':
+        f = form(obj=entity)
+        return render_template('form.html', form=f, data={
+        'entity_name': entity_name,
+        'entity_title': entity_name,
+        'acion': f"/{entity_name}/edit/{id}"
     })
+    f = form(request.form)
+    if request.method == 'POST' and f.validate():
+        f.populate_obj(entity)
+        db.session.commit()
+        if not success:
+            return error(401, entity)
+    return redirect('/' + entity_name)
 
 
 @frontend.route("/<entity_name>/remove/<id>", methods=['GET'])

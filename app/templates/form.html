@@ -6,16 +6,16 @@
 {% block content %}
    <div class="container">
    <div class="col-md-12">
-      <form action="/{{ data.entity_name }}/edit/1" method="post" novalidate>
-        <p>
-            {{ form.name.label }}<br>
-            {{ form.name(size=32) }}
-        </p>
-        <p>
-            {{ form.price.label }}<br>
-            {{ form.price(size=32) }}
-        </p>
-        <p>{{ form.submit() }}</p>
+      <form action="{{data.action}}" method="post" novalidate>
+        {% for field in form %}
+          <p>
+              {% if field.type != 'CSRFTokenField' %}
+                {{ field.label }}<br>
+              {% endif %}
+              {{ field }}
+          </p>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Submit</button>
     </form>
    </div>
 {%- endblock %}
