@@ -1,10 +1,9 @@
-from flask import Blueprint, render_template, flash, redirect, url_for
+from flask import Blueprint, render_template, flash, redirect, url_for, request
 from flask import Flask, jsonify, render_template, session, request, redirect, url_for
-from flask_bootstrap import __version__ as FLASK_BOOTSTRAP_VERSION
-from flask_nav.elements import Navbar, View, Subgroup, Link, Text, Separator
-from markupsafe import escape
-from .crud_entity import resolve_entity
+from flask_nav.elements import Navbar, View, Link
+from .crud_entity import resolve_entity, resolve_forms
 from .db import db
+from .json_encoder import to_json
 
 from .nav import nav
 
@@ -45,15 +44,26 @@ def get_list(entity_name):
     })
 
 
-@frontend.route("/<entity_name>/edit/<id>", methods=['GET', 'PUT'])
+@frontend.route("/<entity_name>/edit/<id>", methods=['GET', 'POST'])
 def edit(entity_name, id):
-    (success, model) = resolve_entity(entity_name)
-    if not success:
-        return error(404, 'Endpoint not found')
-    (success, entity) = model.edit(id)
-    if not success:
-        return error(401, entity)
-    return redirect('/' + entity_name + '/show/' + id)
+    if request.method == 'GET':
+        (success, model) = resolve_forms(entity_name)
+        if not success:
+            return error(404, 'Endpoint not found')
+        f = model()
+        print(to_json(f))
+        return render_template('form.html', form=f, data={
+        'entity_name': entity_name,
+        'entity_title': entity_name,
+    })
+    if request.method == 'POST':
+        (success, model) = resolve_entity(entity_name)
+        if not success:
+            return error(404, 'Endpoint not found')
+        (success, entity) = model.edit(id)
+        if not success:
+            return error(401, entity)
+        return redirect('/' + entity_name + '/show/' + id)
 
 
 @frontend.route("/<entity_name>/show/<id>", methods=['GET'])
