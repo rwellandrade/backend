@@ -68,6 +68,28 @@ def edit(entity_name, id):
             return error(401, entity)
     return redirect('/' + entity_name)
 
+@frontend.route("/<entity_name>/create", methods=['GET', 'POST'])
+def create(entity_name):
+    (success, form) = resolve_forms(entity_name)
+    (success, model) = resolve_entity(entity_name)
+    if not success:
+        return error(404, 'Endpoint not found')
+    if request.method == 'GET':
+        f = form()
+        return render_template('form.html', form=f, data={
+        'entity_name': entity_name,
+        'entity_title': entity_name,
+        'acion': f"/{entity_name}/create"
+    })
+    f = form(request.form)
+    if request.method == 'POST' and f.validate():
+        entity = model()
+        f.populate_obj(entity)
+        db.session.add(entity)
+        db.session.commit()
+        if not success:
+            return error(401, entity)
+    return redirect('/' + entity_name)
 
 @frontend.route("/<entity_name>/remove/<id>", methods=['GET'])
 def remove(entity_name, id):
