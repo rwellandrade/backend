@@ -4,6 +4,7 @@ from flask_bootstrap import __version__ as FLASK_BOOTSTRAP_VERSION
 from flask_nav.elements import Navbar, View, Subgroup, Link, Text, Separator
 from markupsafe import escape
 from .crud_entity import resolve_entity
+from .db import db
 
 from .nav import nav
 
@@ -76,7 +77,11 @@ def remove(entity_name, id):
     (success, model) = resolve_entity(entity_name)
     if not success:
         return error(404, 'Endpoint not found')
-    model.remove(id)
+    entity = model.query.filter_by(id=id)
+    if entity.first() is None:
+        return error(404, entity_name + ' not found for id: ' + str(id))
+    entity.delete()
+    db.session.commit()
     return redirect('/' + entity_name)
 
 
