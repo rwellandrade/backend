@@ -2,27 +2,36 @@
 
 
 {% block content %}
-   <div class="container">
-    <h1>Lista {{ data.entity_title }}</h1>
-    <p><a href="/">Voltar</a></p>
-    <p><a href="/{{ data.entity_name }}/create">Voltar</a></p>
-    <table class="table table-striped table-hover">
-        <tr>
-            {% for col_header in data.col_headers %}
-                <th>{{ col_header }}</th>
-            {% endfor %}
-            <th>Ações</th>
-        </tr>
-        {% for entity in data.entities %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <span>Lista {{ data.entity_title }}</span>
+        </div>
+        <div class="col-md-8">
+            <a href="/" class="btn btn-primary">Criar</a>
+            <a href="/{{ data.entity_name }}/create" class="button btn btn-primary">Voltar</a>
+        </div>
+    </div>
+    <div class="row">
+        <table class="table table-striped table-hover">
             <tr>
                 {% for col_header in data.col_headers %}
-                    <td>{{ entity[col_header] }}</td>
+                <th>{{ col_header }}</th>
+                {% endfor %}
+                <th>Ações</th>
+            </tr>
+            {% for entity in data.entities %}
+            <tr>
+                {% for col_header in data.col_headers %}
+                <td>{{ entity[col_header] }}</td>
                 {% endfor %}
                 <td>
                     <a href="/{{ data.entity_name }}/remove/{{ entity.id }}">Remover</a>
                     <a href="/{{ data.entity_name }}/edit/{{ entity.id }}">Editar</a>
                 </td>
             </tr>
-        {% endfor %}
-    </table>
-{%- endblock %}
+            {% endfor %}
+        </table>
+    </div>
+
+    {%- endblock %}
